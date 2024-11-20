@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mspl-ecommerce
-          image: mspl-ecommerce:latest
+          image: fileweb1:v1  # Update with your image path if using a registry
           ports:
             - containerPort: 3000
           env:
@@ -43,6 +43,8 @@ spec:
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 20
+      imagePullSecrets:
+        - name: mydocker  # Reference your Docker secret here
 ---
 apiVersion: v1
 kind: Service
