@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mspl-ecommerce
-          image: fileweb1:v1  # Update with your image path if using a registry
+          image: fileweb1:v11  # Update with your image path if using a registry
           ports:
             - containerPort: 3000
           env:
