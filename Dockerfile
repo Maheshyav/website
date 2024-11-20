@@ -1,34 +1,20 @@
 # Use a compatible Node.js version
-FROM node:18-alpine as builder
+FROM node:18-alpine
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json to the container
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the application files
 COPY . .
 
-# Build the application
-RUN npm run build
+# Expose the port your app runs on
+EXPOSE 8081
 
-# Use a smaller image for serving the app
-FROM node:18-alpine as production
-
-# Set the working directory
-WORKDIR /app
-
-# Copy build output from the builder stage
-COPY --from=builder /app/dist ./dist
-
-# Install only production dependencies
-COPY package*.json ./
-RUN npm install --production
-
-# Expose the port
-EXPOSE 3000
-
-# Start the application
-CMD ["npm", "run", "start"]
+# Command to start the application
+CMD ["npm", "start"]
