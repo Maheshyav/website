@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { CartItem } from '../types';
 import { useAuth } from '../contexts/AuthContext'; // Assuming you have this context
-import { useHistory } from 'react-router-dom'; // UseHistory instead of useNavigate
+import { useHistory } from 'react-router-dom'; // Assuming you're using react-router
 
 interface CartProps {
   isOpen: boolean;
@@ -11,33 +11,34 @@ interface CartProps {
   onRemoveItem: (id: number, size: string) => void;
 }
 
-export default function Cart({ isOpen, onClose, items = [], onUpdateQuantity, onRemoveItem }: CartProps) {
-  const { currentUser } = useAuth();
-  const history = useHistory(); // UseHistory hook
-  const total = items.reduce((sum, item) => sum + item.price * Math.max(1, item.quantity), 0);
+export default function Cart({ isOpen, onClose, items, onUpdateQuantity, onRemoveItem }: CartProps) {
+  const { currentUser } = useAuth();  // Assuming useAuth returns the current user
+  const history = useHistory(); // For redirecting to login page
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   if (!isOpen) return null;
 
   const handleCheckout = () => {
     if (!currentUser) {
-      history.push('/login'); // Redirect to login page using history.push
+      // Redirect to login page if user is not logged in
+      history.push('/login');
     } else {
+      // Proceed with checkout if user is logged in
+      // Add your checkout logic here (e.g., navigate to checkout page or show checkout modal)
       alert("Proceeding to checkout...");
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      <div
-        className="absolute inset-0 bg-black bg-opacity-50"
-        onClick={(e) => e.target === e.currentTarget && onClose()}
-      />
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      
       <div className="fixed inset-y-0 right-0 flex max-w-full">
         <div className="w-screen max-w-md transform transition-transform duration-500 ease-in-out">
           <div className="flex h-full flex-col bg-white shadow-xl">
             <div className="flex items-center justify-between px-4 py-6">
-              <h2 id="cart-title" className="text-lg font-medium">Shopping Cart</h2>
-              <button onClick={onClose} aria-label="Close Cart">
+              <h2 className="text-lg font-medium">Shopping Cart</h2>
+              <button onClick={onClose}>
                 <X className="h-6 w-6" />
               </button>
             </div>
@@ -60,7 +61,7 @@ export default function Cart({ isOpen, onClose, items = [], onUpdateQuantity, on
                         <p className="text-sm text-gray-500">Size: {item.size}</p>
                         <div className="mt-2 flex items-center space-x-2">
                           <button
-                            onClick={() => onUpdateQuantity(item.id, item.size, Math.max(1, item.quantity - 1))}
+                            onClick={() => onUpdateQuantity(item.id, item.size, Math.max(0, item.quantity - 1))}
                             className="px-2 py-1 border rounded"
                           >
                             -
@@ -77,7 +78,6 @@ export default function Cart({ isOpen, onClose, items = [], onUpdateQuantity, on
                       <button
                         onClick={() => onRemoveItem(item.id, item.size)}
                         className="text-gray-400 hover:text-gray-500"
-                        aria-label="Remove Item"
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -93,11 +93,19 @@ export default function Cart({ isOpen, onClose, items = [], onUpdateQuantity, on
                 <p>${total.toFixed(2)}</p>
               </div>
               <button
-                className="mt-6 w-full bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-500"
+                className="mt-6 w-full bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors"
                 onClick={handleCheckout}
               >
                 Checkout
               </button>
+              <div className="mt-4 text-center">
+                <button
+                  onClick={onClose}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Continue Shopping
+                </button>
+              </div>
             </div>
           </div>
         </div>
